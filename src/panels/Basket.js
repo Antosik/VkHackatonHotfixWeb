@@ -13,7 +13,7 @@ const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order, orderS
   const item = area.items.filter(item => item.id === itemId)[0];
   const settings = orderSettings[itemId] || { delivery: { faster: true, time: '' }, selfService: true };
 
-  const [ price, products ] = useMemo(() => {
+  const [ price = '0', products = [] ] = useMemo(() => {
     const foodIds = new Set((item.foods || []).map(item => item.id));
 
     const products = Object.values(order)
@@ -24,10 +24,10 @@ const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order, orderS
       });
 
     const result = products.reduce((result, value) => {
-        const { count, item } = value;
+      const { count, item } = value;
 
-        return result + parseInt(item.price) * parseInt(count);
-      }, 0);
+      return result + parseInt(item.price) * parseInt(count);
+    }, 0);
 
     return [ accounting.formatNumber(result, 0, ' '), products ];
   }, [ order, item ]);
@@ -144,9 +144,13 @@ const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order, orderS
         </div>
       </div>
       <footer className="Place__footer">
-        <Link to={`/order/${area.id}/${item.id}`} className="Place__order">
-          Оплатить {price}
-        </Link>
+        {products.length === 0 
+          ? <Link to={`/place/${areaId}/${itemId}`} className="Place__order Place__order-empty">
+              У вас в корзине нет продуктов :с
+            </Link>
+          : <Link to={`/order/${area.id}/${item.id}`} className="Place__order">
+              Оплатить {price}
+            </Link>}
       </footer>
     </div>
   );

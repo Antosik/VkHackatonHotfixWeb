@@ -165,6 +165,10 @@
   color: #fff;
 }
 
+.Place__order-empty {
+  background-color: #a3a3a3;
+}
+
 .Place__products-wrapper {
   position: relative;
 }
