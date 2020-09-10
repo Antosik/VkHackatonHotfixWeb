@@ -123,6 +123,7 @@ const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order }) => {
           <span>Назначить</span>
           <input
             value={time}
+            type="time"
             onFocus={() => {
               setFaster(false);
             }}
