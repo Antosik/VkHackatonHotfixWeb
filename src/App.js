@@ -33,7 +33,7 @@ const FOOD_AREAS = [{
 			name: 'Классик',
 			price: 150,
 		}, {
-			id: 'bigmac',
+			id: 'potato',
 			image: OneTowar,
 			name: 'Картофель фри',
 			price: 50,
@@ -126,6 +126,7 @@ const foodsMap = FOOD_AREAS.reduce((result, area) => {
 
 const App = () => {
 	const [ orderStatuses, setOrderStatuses ] = useState(JSON.parse((localStorage.getItem('orderStatuses') || 'null')) || {});
+	const [ orderSettings, setOrderSettings ] = useState(JSON.parse((localStorage.getItem('orderSettings') || 'null')) || {});
 	const [ order, setOrder ] = useState(JSON.parse((localStorage.getItem('orders') || 'null')) || {});
 
 	return (
@@ -152,6 +153,26 @@ const App = () => {
 					<Basket
 						foodAreas={FOOD_AREAS}
 						order={order}
+						orderSettings={orderSettings}
+						setSelfServiceSetting={((itemId, parameter) => {
+							const nextSettings = {...orderSettings};
+
+							if (!nextSettings[itemId]) nextSettings[itemId] = { delivery: { faster: true, time: '' }, selfService: true };
+							nextSettings[itemId]['selfService'] = parameter;
+
+							setOrderSettings(nextSettings);
+							localStorage.setItem('orderSettings', JSON.stringify(nextSettings));
+
+						})}
+						setDeliverySetting={((itemId, parameters) => {
+							const nextSettings = {...orderSettings};
+							
+							if (!nextSettings[itemId]) nextSettings[itemId] = { delivery: { faster: true, time: '' }, selfService: true };
+							nextSettings[itemId]['delivery'] = { ...nextSettings[itemId]['delivery'], ...parameters };
+
+							setOrderSettings(nextSettings);
+							localStorage.setItem('orderSettings', JSON.stringify(nextSettings));
+						})}
 					/>
 				</Route>
 				<Route
@@ -165,7 +186,7 @@ const App = () => {
 						setFinishedOrder={({ itemId }) => {
 							const nextStatuses = {...orderStatuses};
 
-							nextStatuses[itemId] = 'DONE';
+							nextStatuses[itemId] = 'CANCELLED';
 
 							setOrderStatuses(nextStatuses);
 							localStorage.setItem('orderStatuses', JSON.stringify(nextStatuses));
